@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redress — Student Grievance Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F5EF;
+    --paper-raised:#FFFFFF;
+    --ink:#1B2A4A;
+    --ink-soft:#4A5670;
+    --maroon:#8B2635;
+    --maroon-soft:#C0495A;
+    --gold:#B8862F;
+    --green:#2F7A4F;
+    --green-bg:#E9F3ED;
+    --amber-bg:#FBF1DE;
+    --line:#E1DCCF;
+    --serif:'Source Serif 4', Georgia, serif;
+    --sans:'IBM Plex Sans', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--sans);
+    line-height:1.55;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+  a{color:var(--maroon);}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 28px;}
+  h1,h2,h3{font-family:var(--serif); font-weight:600; color:var(--ink);}
+  :focus-visible{outline:2px solid var(--maroon); outline-offset:2px;}
+
+  /* ---------- Header ---------- */
+  header.site{
+    border-bottom:1px solid var(--line); background:var(--paper-raised);
+    position:sticky; top:0; z-index:50;
+  }
+  .site-inner{
+    max-width:1080px; margin:0 auto; padding:16px 28px;
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .seal{
+    width:38px; height:38px; border-radius:50%; border:2px solid var(--maroon);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-family:var(--serif); font-weight:700; color:var(--maroon); font-size:15px;
+  }
+  .brand-text .title{font-family:var(--serif); font-weight:700; font-size:17px; color:var(--ink); line-height:1.1;}
+  .brand-text .sub{font-size:11.5px; color:var(--ink-soft); letter-spacing:0.03em;}
+  .site-nav{display:flex; gap:26px; font-size:14px;}
+  .site-nav a{text-decoration:none; color:var(--ink-soft); font-weight:500; transition:color 0.2s;}
+  .site-nav a:hover{color:var(--maroon);}
+  .site-cta{
+    background:var(--maroon); color:#fff; padding:9px 18px; border-radius:4px;
+    text-decoration:none; font-size:13.5px; font-weight:600; white-space:nowrap;
+    transition:background 0.2s;
+  }
+  .site-cta:hover{background:#701f2b;}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:64px 0 56px; border-bottom:1px solid var(--line);}
+  .hero-inner{display:grid; grid-template-columns:1.15fr 0.85fr; gap:48px; align-items:center;}
+  .hero .eyebrow{
+    font-family:var(--mono); font-size:12px; color:var(--maroon); text-transform:uppercase;
+    letter-spacing:0.1em; margin-bottom:16px; display:flex; align-items:center; gap:8px;
+  }
+  .hero .eyebrow::before{content:""; width:16px; height:1px; background:var(--maroon);}
+  .hero h1{font-size:clamp(30px,4vw,44px); line-height:1.14; margin-bottom:18px;}
+  .hero p.lede{font-size:16.5px; color:var(--ink-soft); max-width:52ch; margin-bottom:28px;}
+  .trust-row{display:flex; gap:28px; flex-wrap:wrap;}
+  .trust-item{display:flex; align-items:flex-start; gap:10px; max-width:220px;}
+  .trust-item .ic{color:var(--maroon); flex-shrink:0; margin-top:2px;}
+  .trust-item .tt{font-size:13px; font-weight:600; color:var(--ink);}
+  .trust-item .td{font-size:12.5px; color:var(--ink-soft);}
+
+  .stat-card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:10px;
+    padding:28px; box-shadow:0 20px 40px -24px rgba(27,42,74,0.25);
+  }
+  .stat-card h3{font-size:13px; font-family:var(--sans); font-weight:600; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:18px;}
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .stat-grid div .num{font-family:var(--serif); font-size:28px; font-weight:700; color:var(--maroon);}
+  .stat-grid div .lab{font-size:12px; color:var(--ink-soft);}
+  .stat-note{margin-top:18px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-soft);}
+
+  /* ---------- Section shared ---------- */
+  section.pad{padding:64px 0;}
+  .section-head{max-width:640px; margin-bottom:36px;}
+  .section-head .eyebrow{font-family:var(--mono); font-size:12px; color:var(--maroon); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:10px;}
+  .section-head h2{font-size:clamp(22px,2.6vw,30px);}
+  .section-head p{color:var(--ink-soft); font-size:14.5px; margin-top:8px;}
+
+  /* ---------- Process steps ---------- */
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--paper-raised);}
+  .step{padding:24px 22px; border-right:1px solid var(--line); position:relative;}
+  .step:last-child{border-right:none;}
+  .step .step-num{font-family:var(--mono); font-size:12px; color:var(--maroon); margin-bottom:10px; display:block;}
+  .step h3{font-size:15.5px; margin-bottom:6px;}
+  .step p{font-size:13px; color:var(--ink-soft);}
+
+  /* ---------- Main two-panel: form + tracker ---------- */
+  .panels{display:grid; grid-template-columns:1.2fr 1fr; gap:28px; align-items:start;}
+  .panel{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; padding:32px;
+  }
+  .panel h2{font-size:21px; margin-bottom:6px;}
+  .panel .panel-sub{font-size:13.5px; color:var(--ink-soft); margin-bottom:24px;}
+
+  .field{margin-bottom:20px;}
+  .field label{display:block; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:7px;}
+  .field .hint{font-size:12px; color:var(--ink-soft); font-weight:400; margin-left:4px;}
+  .field input[type=text], .field input[type=email], .field select, .field textarea{
+    width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:6px;
+    background:var(--paper); font-family:var(--sans); font-size:14px; color:var(--ink);
+    transition:border-color 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--maroon);}
+  .field textarea{resize:vertical; min-height:100px;}
+  .charcount{font-size:11.5px; color:var(--ink-soft); text-align:right; margin-top:4px;}
+
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{
+    padding:8px 14px; border:1px solid var(--line); border-radius:20px; font-size:13px;
+    cursor:pointer; background:var(--paper); color:var(--ink-soft); transition:all 0.15s; user-select:none;
+  }
+  .chip:hover{border-color:var(--maroon-soft);}
+  .chip.active{background:var(--maroon); border-color:var(--maroon); color:#fff; font-weight:600;}
+
+  .toggle-row{display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:var(--paper); border:1px solid var(--line); border-radius:8px; margin-bottom:20px;}
+  .toggle-row .tt{font-size:13.5px; font-weight:600;}
+  .toggle-row .td{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .switch{position:relative; width:42px; height:24px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .slider{position:absolute; inset:0; background:#CBC5B4; border-radius:20px; cursor:pointer; transition:0.2s;}
+  .slider::before{content:""; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:0.2s;}
+  .switch input:checked + .slider{background:var(--maroon);}
+  .switch input:checked + .slider::before{transform:translateX(18px);}
+
+  .urgency-row{display:flex; gap:8px;}
+  .urgency-row label{flex:1;}
+  .urgency-row input{display:none;}
+  .urgency-btn{
+    display:block; text-align:center; padding:10px; border:1px solid var(--line); border-radius:6px;
+    font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all 0.15s;
+  }
+  .urgency-row input:checked + .urgency-btn{border-color:var(--maroon); background:var(--maroon); color:#fff; font-weight:600;}
+
+  .submit-btn{
+    width:100%; padding:14px; background:var(--maroon); color:#fff; border:none; border-radius:6px;
+    font-family:var(--sans); font-size:14.5px; font-weight:700; cursor:pointer; transition:background 0.2s;
+  }
+  .submit-btn:hover{background:#701f2b;}
+  .submit-btn:disabled{background:#C9BFB4; cursor:not-allowed;}
+
+  .form-note{font-size:12px; color:var(--ink-soft); margin-top:14px; display:flex; gap:8px; align-items:flex-start;}
+
+  /* Confirmation card */
+  .confirm-card{
+    display:none; background:var(--green-bg); border:1px solid #BFDECB; border-radius:10px; padding:22px;
+    margin-bottom:24px;
+  }
+  .confirm-card.show{display:block; animation:fadein 0.4s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);}}
+  .confirm-card .ct{font-weight:700; color:var(--green); font-size:14.5px; margin-bottom:4px;}
+  .confirm-card .cid{font-family:var(--mono); font-size:15px; color:var(--ink); font-weight:600;}
+  .confirm-card .cd{font-size:12.5px; color:var(--ink-soft); margin-top:6px;}
+
+  /* Tracker panel */
+  .track-search{display:flex; gap:8px; margin-bottom:22px;}
+  .track-search input{flex:1; padding:11px 13px; border:1px solid var(--line); border-radius:6px; font-family:var(--mono); font-size:13.5px;}
+  .track-search button{padding:11px 16px; background:var(--ink); color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;}
+  .track-search button:hover{background:#2a3c63;}
+
+  .empty-state{text-align:center; padding:36px 16px; color:var(--ink-soft); font-size:13.5px;}
+  .empty-state .ic{font-size:28px; margin-bottom:10px; opacity:0.5;}
+
+  .case-card{border:1px solid var(--line); border-radius:8px; padding:16px 18px; margin-bottom:14px; background:var(--paper);}
+  .case-card .row1{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .case-card .cid{font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);}
+  .case-card .cat{font-size:14px; font-weight:600; margin-top:4px;}
+  .badge{font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; white-space:nowrap; text-transform:uppercase; letter-spacing:0.02em;}
+  .badge.received{background:var(--amber-bg); color:var(--gold);}
+  .badge.review{background:#E3E9F5; color:var(--ink);}
+  .badge.resolved{background:var(--green-bg); color:var(--green);}
+
+  .timeline{display:flex; align-items:center; margin-top:14px;}
+  .tl-step{flex:1; text-align:center; position:relative;}
+  .tl-dot{width:11px; height:11px; border-radius:50%; background:var(--line); margin:0 auto 6px; position:relative; z-index:2; border:2px solid var(--paper);}
+  .tl-step.done .tl-dot{background:var(--maroon);}
+  .tl-line{position:absolute; top:5px; left:-50%; width:100%; height:2px; background:var(--line); z-index:1;}
+  .tl-step:first-child .tl-line{display:none;}
+  .tl-step.done .tl-line{background:var(--maroon);}
+  .tl-label{font-size:10.5px; color:var(--ink-soft);}
+  .tl-step.done .tl-label{color:var(--ink); font-weight:600;}
+
+  footer.site{border-top:1px solid var(--line); padding:26px 0; margin-top:20px;}
+  footer.site .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:12px; color:var(--ink-soft);}
+
+  .proto-note{
+    background:var(--amber-bg); border:1px solid #E6D1A0; border-radius:8px; padding:12px 16px;
+    font-size:12.5px; color:#7A5A16; margin-bottom:28px; display:flex; gap:10px; align-items:flex-start;
+  }
+
+  @media (max-width:860px){
+    .site-nav{display:none;}
+    .hero-inner{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr 1fr;}
+    .step{border-bottom:1px solid var(--line);}
+    .panels{grid-template-columns:1fr;}
+    .stat-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="site-inner">
+    <div class="brand">
+      <div class="seal">R</div>
+      <div class="brand-text">
+        <div class="title">Redress</div>
+        <div class="sub">Student Grievance Portal</div>
+      </div>
+    </div>
+    <nav class="site-nav">
+      <a href="#file">File a Grievance</a>
+      <a href="#track">Track Status</a>
+      <a href="#process">How it Works</a>
+    </nav>
+    <a href="#file" class="site-cta">File a Grievance</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <div class="eyebrow">Confidential · Reviewed by faculty ombudsperson</div>
+      <h1>A direct, tracked way to raise campus issues.</h1>
+      <p class="lede">Report academic, hostel, harassment, or infrastructure concerns and follow every case from submission to resolution — anonymously if you choose.</p>
+      <div class="trust-row">
+        <div class="trust-item">
+          <span class="ic">🔒</span>
+          <div><div class="tt">Anonymous option</div><div class="td">Your identity stays hidden if you choose not to share it.</div></div>
+        </div>
+        <div class="trust-item">
+          <span class="ic">📨</span>
+          <div><div class="tt">Case tracking</div><div class="td">Every submission gets a tracking ID to check status anytime.</div></div>
+        </div>
+        <div class="trust-item">
+          <span class="ic">⏱</span>
+          <div><div class="tt">Time-bound review</div><div class="td">Committee response within 5 working days.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <h3>This semester</h3>
+      <div class="stat-grid">
+        <div><div class="num">212</div><div class="lab">Grievances filed</div></div>
+        <div><div class="num">4.1d</div><div class="lab">Avg. first response</div></div>
+        <div><div class="num">89%</div><div class="lab">Resolved within SLA</div></div>
+        <div><div class="num">63%</div><div class="lab">Filed anonymously</div></div>
+      </div>
+      <div class="stat-note">Figures reviewed monthly by the Student Affairs office.</div>
+    </div>
+  </div>
+</section>
+
+<section class="pad" id="process">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">How it works</div>
+      <h2>From submission to resolution, in four steps.</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="step-num">01</span><h3>Submit</h3><p>File details of your grievance through the form, with or without your name attached.</p></div>
+      <div class="step"><span class="step-num">02</span><h3>Acknowledged</h3><p>You receive a tracking ID immediately and a confirmation within 24 hours.</p></div>
+      <div class="step"><span class="step-num">03</span><h3>Under review</h3><p>The relevant committee investigates and may reach out for more information.</p></div>
+      <div class="step"><span class="step-num">04</span><h3>Resolved</h3><p>You're notified of the outcome and any action taken, via your tracking ID.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="pad" id="file" style="border-top:1px solid var(--line); background:var(--paper-raised);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">File &amp; track</div>
+      <h2>Submit a grievance or check an existing case.</h2>
+    </div>
+
+    <div class="proto-note">
+      <span>ⓘ</span>
+      <span>This is a front-end prototype. Submissions are stored only in your current browser session and are not sent anywhere or saved after you close this page.</span>
+    </div>
+
+    <div class="panels">
+      <!-- File a grievance -->
+      <div class="panel">
+        <h2>File a grievance</h2>
+        <p class="panel-sub">Fields marked with an asterisk are required.</p>
+
+        <div class="confirm-card" id="confirmCard">
+          <div class="ct">✓ Grievance received</div>
+          <div class="cid" id="confirmId"></div>
+          <div class="cd">Save this ID to track your case status below.</div>
+        </div>
+
+        <form id="grievanceForm">
+          <div class="field">
+            <label>Category *</label>
+            <div class="chip-row" id="categoryChips">
+              <div class="chip" data-val="Academic">Academic</div>
+              <div class="chip" data-val="Hostel & Mess">Hostel &amp; Mess</div>
+              <div class="chip" data-val="Faculty Conduct">Faculty Conduct</div>
+              <div class="chip" data-val="Harassment">Harassment</div>
+              <div class="chip" data-val="Infrastructure">Infrastructure</div>
+              <div class="chip" data-val="Exams & Results">Exams &amp; Results</div>
+              <div class="chip" data-val="Other">Other</div>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div>
+              <div class="tt">Submit anonymously</div>
+              <div class="td">Your name and roll number will not be recorded.</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="anonToggle">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div id="identityFields">
+            <div class="field">
+              <label>Full name *</label>
+              <input type="text" id="fullName" placeholder="As per college records">
+            </div>
+            <div class="field">
+              <label>College email *</label>
+              <input type="email" id="email" placeholder="you@college.edu">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Urgency</label>
+            <div class="urgency-row">
+              <label><input type="radio" name="urgency" value="Low" checked><span class="urgency-btn">Low</span></label>
+              <label><input type="radio" name="urgency" value="Medium"><span class="urgency-btn">Medium</span></label>
+              <label><input type="radio" name="urgency" value="High"><span class="urgency-btn">High</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Describe the issue * <span class="hint">min. 30 characters</span></label>
+            <textarea id="description" maxlength="800" placeholder="What happened, when, and where? Include any relevant names, dates, or locations."></textarea>
+            <div class="charcount"><span id="charNum">0</span>/800</div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit grievance</button>
+          <div class="form-note">
+            <span>🛈</span>
+            <span>False or malicious complaints may be referred to the disciplinary committee. Genuine concerns are always welcome.</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Track status -->
+      <div class="panel" id="track">
+        <h2>Track a case</h2>
+        <p class="panel-sub">Look up any grievance filed this session, or browse them below.</p>
+        <div class="track-search">
+          <input type="text" id="trackInput" placeholder="e.g. GRV-2026-00001">
+          <button id="trackBtn">Look up</button>
+        </div>
+        <div id="trackResult"></div>
+        <div id="caseList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div>© 2026 College Student Affairs Office · Redress Portal</div>
+    <div>Need immediate help? Contact the Dean of Students, Room 214.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const chips = document.querySelectorAll('#categoryChips .chip');
+  let selectedCategory = null;
+  chips.forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      chips.forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      selectedCategory = chip.dataset.val;
+      validateForm();
+    });
+  });
+
+  const anonToggle = document.getElementById('anonToggle');
+  const identityFields = document.getElementById('identityFields');
+  anonToggle.addEventListener('change', ()=>{
+    identityFields.style.display = anonToggle.checked ? 'none' : 'block';
+    validateForm();
+  });
+
+  const description = document.getElementById('description');
+  const charNum = document.getElementById('charNum');
+  description.addEventListener('input', ()=>{
+    charNum.textContent = description.value.length;
+    validateForm();
+  });
+
+  const fullName = document.getElementById('fullName');
+  const email = document.getElementById('email');
+  [fullName, email].forEach(el=> el.addEventListener('input', validateForm));
+
+  const submitBtn = document.getElementById('submitBtn');
+  function validateForm(){
+    const descOk = description.value.trim().length >= 30;
+    const catOk = !!selectedCategory;
+    const identityOk = anonToggle.checked || (fullName.value.trim().length > 1 && email.value.includes('@'));
+    submitBtn.disabled = !(descOk && catOk && identityOk);
+  }
+
+  // ---------- In-memory case store ----------
+  let cases = [];
+  let counter = 1;
+
+  function genId(){
+    const id = 'GRV-2026-' + String(counter).padStart(5,'0');
+    counter++;
+    return id;
+  }
+
+  const form = document.getElementById('grievanceForm');
+  const confirmCard = document.getElementById('confirmCard');
+  const confirmId = document.getElementById('confirmId');
+
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    if(submitBtn.disabled) return;
+
+    const urgency = form.querySelector('input[name="urgency"]:checked').value;
+    const newCase = {
+      id: genId(),
+      category: selectedCategory,
+      urgency: urgency,
+      anonymous: anonToggle.checked,
+      name: anonToggle.checked ? null : fullName.value.trim(),
+      description: description.value.trim(),
+      status: 'received', // received -> review -> resolved
+      filedAt: new Date()
+    };
+    cases.unshift(newCase);
+
+    // simulate progress over time for realism
+    setTimeout(()=>{ newCase.status = 'review'; renderCaseList(); }, 6000);
+
+    confirmId.textContent = newCase.id;
+    confirmCard.classList.add('show');
+
+    form.reset();
+    chips.forEach(c=>c.classList.remove('active'));
+    selectedCategory = null;
+    identityFields.style.display = 'block';
+    charNum.textContent = '0';
+    submitBtn.disabled = true;
+
+    renderCaseList();
+  });
+
+  // ---------- Tracker ----------
+  const trackInput = document.getElementById('trackInput');
+  const trackBtn = document.getElementById('trackBtn');
+  const trackResult = document.getElementById('trackResult');
+  const caseList = document.getElementById('caseList');
+
+  function statusMeta(status){
+    if(status === 'resolved') return {label:'Resolved', cls:'resolved'};
+    if(status === 'review') return {label:'Under Review', cls:'review'};
+    return {label:'Received', cls:'received'};
+  }
+
+  function timelineHTML(status){
+    const stepsArr = ['received','review','resolved'];
+    const labels = ['Received','Under Review','Resolved'];
+    const currentIdx = stepsArr.indexOf(status);
+    return '<div class="timeline">' + stepsArr.map((s,i)=>{
+      const done = i <= currentIdx;
+      return `<div class="tl-step ${done?'done':''}"><div class="tl-line"></div><div class="tl-dot"></div><div class="tl-label">${labels[i]}</div></div>`;
+    }).join('') + '</div>';
+  }
+
+  function caseCardHTML(c){
+    const meta = statusMeta(c.status);
+    const who = c.anonymous ? 'Anonymous' : c.name;
+    return `
+      <div class="case-card">
+        <div class="row1">
+          <div>
+            <div class="cid">${c.id}</div>
+            <div class="cat">${c.category}</div>
+          </div>
+          <span class="badge ${meta.cls}">${meta.label}</span>
+        </div>
+        <div style="font-size:12.5px; color:var(--ink-soft); margin-top:6px;">${who} · ${c.urgency} urgency · filed ${c.filedAt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
+        ${timelineHTML(c.status)}
+      </div>`;
+  }
+
+  function renderCaseList(){
+    if(cases.length === 0){
+      caseList.innerHTML = `<div class="empty-state"><div class="ic">📭</div>No grievances filed yet this session.<br>Submitted cases will appear here.</div>`;
+      return;
+    }
+    caseList.innerHTML = cases.map(caseCardHTML).join('');
+  }
+  renderCaseList();
+
+  trackBtn.addEventListener('click', doTrack);
+  trackInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') doTrack(); });
+
+  function doTrack(){
+    const q = trackInput.value.trim().toUpperCase();
+    if(!q){ trackResult.innerHTML = ''; return; }
+    const found = cases.find(c => c.id === q);
+    if(found){
+      trackResult.innerHTML = `<div style="margin-bottom:16px;">${caseCardHTML(found)}</div>`;
+    } else {
+      trackResult.innerHTML = `<div class="empty-state" style="padding:18px 10px;">No case found with ID "${q}" in this session.</div>`;
+    }
+  }
+})();
+</script>
+</body>
+</html>
